@@ -1,110 +1,117 @@
-Introduction
 
-The government of Singapore is concerned about the effects of climate change on the country's climate. In particular, they are interested in understanding how the wet-bulb temperature (WBT) is affected by climate change.
+# 🌡️ Predicting Wet-Bulb Temperature with Climate Variables  
+> Exploring climate change implications for Singapore’s heat stress risk using regression analysis
 
-The WBT is a measure of how hot and humid it is outside, and it is important because it can be deadly if it gets too high. Climate change is causing the WBT to rise, and this is a major concern for Singapore because it is a tropical country with high humidity.
+## 📘 Overview  
+Commissioned as a hypothetical policy study for the Singapore government, this project investigates the **relationship between wet-bulb temperature (WBT)**—a crucial indicator of heat stress—and climate change drivers such as greenhouse gases and meteorological factors. Using time-series regression modeling, we aim to identify key contributors to extreme heat conditions in tropical environments.
 
-The government has commissioned a study to investigate the relationship between the WBT and climate change. The study will use data on the four main greenhouse gases, as well as sunshine, rainfall, relative humidity, and air temperature, to predict the WBT.
+## 📌 Objective  
+- To model and predict WBT in Singapore using multivariate regression  
+- To assess the impact of greenhouse gases and meteorological variables on heat stress  
+- To derive actionable public health and policy recommendations
 
-Data Dictionary
+## 📂 Data Dictionary  
+This study integrates 7 datasets from [Data.gov.sg](https://data.gov.sg) and [NOAA](https://gml.noaa.gov):
 
-|Feature|Type|Dataset|Description|
-|---|---|---|---|
-|month|period[M]|Taken from all 7 datasets|The month and year in this format (year-month)|
-|mean_surface_airtemp|float|surface-air-temperature-monthly-mean|The mean surface air temperature (in degrees celsius) for each respective month in Singapore|
-|mean_wet_bulb_temperature|float|wet-bulb-temperature-hourly|The mean wet bulb temperature (in degrees celsius) calculated for each hour over 24 hours for each day over each respective month in Singapore|
-|total_rainfall|float|M890081|The total rainfall (in millimetres) for each respective month in Singapore|
-|daily_mean_sunshine|float|M890081|The mean daily sunshine (in hours) for each respective month in Singapore|
-|mean_relative_humidity|float|M890081|The mean relative humidity (in %) calculated over 24 hours for each respective month in Singapore|
-|average_co2_ppm|float|co2_mm_mlo|The global monthly mean level of carbon dioxide in ppm (parts-per-million)|
-|average_ch4_ppb|float|ch4_mm_gl|The global monthly mean level of methane in ppb (parts-per-billion)|
-|average_n2o_ppb|float|n2o_mm_gl|The global monthly mean level of nitrous oxide in ppb (parts-per-billion)|
-|average_sf6_ppt|float|sf6_mm_gl|The global monthly mean level of sulfur hexafluoride in ppt (parts-per-trillion)| in mm| 
+| Feature                     | Description                                                                 |
+|----------------------------|-----------------------------------------------------------------------------|
+| `month`                    | Monthly timestamp in `YYYY-MM` format                                       |
+| `mean_surface_airtemp`     | Mean surface air temperature (°C)                                           |
+| `mean_wet_bulb_temperature`| Derived monthly WBT from hourly readings (°C)                               |
+| `total_rainfall`           | Total rainfall (mm)                                                         |
+| `daily_mean_sunshine`      | Daily mean sunshine hours                                                   |
+| `mean_relative_humidity`   | Mean relative humidity (%)                                                  |
+| `average_co2_ppm`          | Atmospheric CO₂ concentration (ppm)                                         |
+| `average_ch4_ppb`          | Atmospheric CH₄ concentration (ppb)                                         |
+| `average_n2o_ppb`          | Atmospheric N₂O concentration (ppb)                                         |
+| `average_sf6_ppt`          | Atmospheric SF₆ concentration (ppt)                                         |
 
-Methods
+## 🧪 Methods  
 
-The study used a variety of methods to investigate the relationship between the WBT and climate change. These methods included:
+### 🧭 Exploratory Data Analysis (EDA)  
+- Correlation matrices and time-series visualizations  
+- Seasonal decomposition of WBT and meteorological variables  
+- Outlier detection and trend profiling
 
-    Data analysis: The study analyzed data on the four main greenhouse gases, as well as sunshine, rainfall, relative humidity, and air temperature, to identify any correlations between these variables and the WBT.
+### 🛠 Feature Engineering  
+- Time alignment and cleaning of multi-source datasets  
+- Lag variables to account for delayed atmospheric effects  
+- Standardization of greenhouse gas units for integration
 
-Results
+### 📊 Modeling & Evaluation  
+- Trained a **Multiple Linear Regression** model to predict WBT  
+- Evaluated via **R² score**, **RMSE**, and residual diagnostics  
+- Assessed feature importance and multicollinearity patterns
 
-The study found that there is a positive correlation between the WBT and the following variables:
+## 📈 Key Findings  
+- **Positive correlation with WBT:** Mean air temperature, nitrous oxide (N₂O), sulfur hexafluoride (SF₆), sunshine, and rainfall  
+- **Negative correlation with WBT:** Relative humidity  
+- Greenhouse gases exhibit high multicollinearity, reflecting shared anthropogenic sources  
+- No clear year-over-year WBT trend, but potential rise in **extreme values** linked to compound heat effects
 
-    Mean surface air temperature (MSA)
-    Nitrous oxide
-    Sulfur hexafluoride
-    Total rainfall
-    Daily mean sunshine
+## 🧠 Interpretation & Policy Implications  
+- Climate change is **altering the heat-humidity dynamics** critical to human survivability  
+- The **reduction in relative humidity**, while seemingly benign, may exacerbate heat stress under rising air temperatures  
+- Policy actions may include:
+  - Integrating WBT into **heatwave early warning systems**
+  - **Public education** on wet-bulb safety thresholds
+  - Tracking WBT alongside **CO₂-equivalent indices**
 
-There is a negative correlation between the WBT and the following variables:
+## 🚀 Future Work  
+- Expand models to include non-linear regressors (Random Forest, XGBoost)  
+- Integrate with **real-time APIs** for continuous monitoring  
+- Cross-reference with **public health data** (e.g., ER visits, heat stroke rates)
 
-    Relative humidity
+## 🔍 Tools & Libraries  
+- Python, Pandas, NumPy, Scikit-learn, Matplotlib, Seaborn  
+- Jupyter Notebook
 
-The study also found that there are some interesting relationships between the other variables. For example, sunshine has a negative correlation with relative humidity, while rainfall has a positive correlation with both sunshine and relative humidity.
+## 📁 Files  
+- `data_analysis_of_wet_bulb_temperature.ipynb`: full analysis notebook  
+- `README.md`: project documentation and synthesis  
 
-Interpretation
+## 📚 References  
+### 📊 Data Sources  
+- [Wet-Bulb Temperature (Hourly) – data.gov.sg](https://data.gov.sg/dataset/wet-bulb-temperature-hourly)  
+- [Surface Air Temperature (Monthly Mean) – data.gov.sg](https://data.gov.sg/dataset/surface-air-temperature-monthly-mean)  
+- [Rainfall, Sunshine, Humidity – SingStat (Table M890081)](https://tablebuilder.singstat.gov.sg/table/TS/M890081)  
+- [Greenhouse Gas Trends – NOAA (CO₂)](https://gml.noaa.gov/ccgg/trends/data.html)  
+- [Methane Trends – NOAA](https://gml.noaa.gov/ccgg/trends_ch4/)  
+- [Nitrous Oxide Trends – NOAA](https://gml.noaa.gov/ccgg/trends_n2o/)  
+- [Sulfur Hexafluoride Trends – NOAA](https://gml.noaa.gov/ccgg/trends_sf6/)  
 
-The study's findings suggest that climate change is having a significant impact on the WBT in Singapore. The increase in greenhouse gases is causing the air to warm up, which in turn is decreasing the relative humidity. This combination of factors is leading to an increase in the WBT, which could have serious consequences for human health and safety.
+### 🌱 Scientific References and Background  
+- [OpenStax Biology – Homeostasis](https://openstax.org/books/biology-2e/pages/33-3-homeostasis)  
+- [Wet Bulb & Dry Bulb Illustration – Khan Academy](https://cdn.kastatic.org/ka-perseus-images/69ad70de87b8e05dcbd1708d4f48dc176e1276e9.png)  
+- [Encyclopedia of Environmental Science – Wet-Bulb Temp](https://link.springer.com/referenceworkentry/10.1007/1-4020-3266-8_94)  
+- [NOAA Heat Index Chart](https://www.weather.gov/images/safety/heatindexchart-650.jpg)  
+- [LBL – Underestimating Heat Waves](https://newscenter.lbl.gov/2022/08/24/no-more-underestimating-heat-waves/)  
+- [NOAA Wet Bulb Definition](https://www.weather.gov/source/zhu/ZHU_Training_Page/definitions/dry_wet_bulb_definition/dry_wet_bulb.html)  
+- [PhysicsCalc – Wet Bulb Calculator](https://physicscalc.com/physics/wet-bulb-calculator/)  
+- [The Guardian – Why WBT Matters](https://www.theguardian.com/science/2022/jul/31/why-you-need-to-worry-about-the-wet-bulb-temperature)  
+- [NIH – Wet Bulb Temperature & Health](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7209987/)  
+- [Washington Post – Extreme Heat & WBT](https://www.washingtonpost.com/weather/2021/07/24/wet-bulb-temperature-extreme-heat/)  
+- [NASA Climate – Heat Beyond Tolerance](https://climate.nasa.gov/explore/ask-nasa-climate/3151/too-hot-to-handle-how-climate-change-may-make-some-places-too-hot-to-live/)  
+- [Washington Post – Explainer on WBT Mortality](https://www.washingtonpost.com/business/energy/2023/07/04/explainer-how-extreme-heat-and-high-wet-bulb-temperatures-kill-people/83bca63e-1ada-11ee-be41-a036f4b098ec_story.html)  
+- [Journal of Applied Physiology – Heat Stress Studies](https://journals.physiology.org/doi/full/10.1152/japplphysiol.00738.2021)  
+- [Phys.org – Fatal Combinations of Heat & Humidity](https://phys.org/news/2020-05-potentially-fatal-combinations-humidity-emerging.html)  
 
-Recommendations
+### 🧠 Broader Climate & Policy Context  
+- [NRDC – Greenhouse Effect 101](https://www.nrdc.org/stories/greenhouse-effect-101#gases)  
+- [EPA – Climate Change Basics](https://www.epa.gov/climatechange-science/basics-climate-change)  
+- [Scientific American – What Causes Humidity?](https://www.scientificamerican.com/article/what-causes-humidity/)  
+- [JPL NASA – Understanding Air & Water](https://sealevel.jpl.nasa.gov/ocean-observation/understanding-climate/air-and-water/)  
+- [CNA – Singapore & 40°C Heat Risk](https://www.channelnewsasia.com/singapore/singapore-weather-40-degrees-celsius-heatwave-global-warming-aircon-3597176)  
+- [NOAA – Labor Capacity & Heat Stress](https://www.gfdl.noaa.gov/research_highlight/heat-stress-reduces-labor-capacity-under-climate-warming/)  
+- [ILO – Climate Risk for Workers](https://www.ilo.org/global/about-the-ilo/newsroom/news/WCMS_794475/lang--en/index.htm)  
+- [Straits Times – NUS Study on Heat Stress](https://www.straitstimes.com/singapore/environment/nus-scientists-to-study-construction-workers-risk-of-heat-stress)  
+- [OmniCalculator – Wet Bulb Calculator](https://www.omnicalculator.com/physics/wet-bulb)  
+- [Carbon Brief – Humidity Paradox](https://www.carbonbrief.org/guest-post-investigating-climate-changes-humidity-paradox/)  
+- [Singapore’s 2nd Nat’l Climate Change Study (ResearchGate)](https://www.researchgate.net/publication/339398733_Singapore%27s_Second_National_Climate_Change_Study_Climate_Projections_to_2100_-_Report_for_Stakeholders)  
+- [IISD – Precautionary Principle](https://www.iisd.org/articles/deep-dive/precautionary-principle)  
+- [Harvard – Tragedy of the Commons](https://online.hbs.edu/blog/post/tragedy-of-the-commons-impact-on-sustainability-issues)
+---
 
-The study's findings have a number of implications for the government of Singapore. The government should:
-
-    Continue to monitor the WBT and other climate-related variables.
-    Develop policies to mitigate the effects of climate change on the country's climate.
-    Educate the public about the dangers of high WBT and how to protect themselves.
-
-These recommendations are important because they will help the government of Singapore to protect its citizens from the effects of climate change. By continuing to monitor the WBT and other climate-related variables, the government can track how climate change is affecting the country and make necessary adjustments to its policies. By developing policies to mitigate the effects of climate change, the government can help to reduce the amount of greenhouse gases emitted into the atmosphere and slow the pace of climate change. And by educating the public about the dangers of high WBT and how to protect themselves, the government can help people to stay safe during extreme weather events.
-
-Conclusion
-
-The study's findings provide valuable insights into the relationship between the WBT and climate change. These insights can be used by the government to develop policies to mitigate the effects of climate change on the country's climate.
-
-Additional Information
-
-The study also found that the greenhouse gases are highly correlated with each other. This is likely due to the fact that they are all emitted by human activities. Relative humidity is negatively correlated with the greenhouse gases. This is because the greenhouse gases trap heat in the atmosphere, which causes the air to warm up. This warming, in turn, decreases the relative humidity.
-
-For the weather variables, there is no clear trend over time. However, MSA appears to be increasing, RH appears to be decreasing, and total rainfall and sunshine do not seem to be changing significantly. For the WBT, the values do not seem to be increasing over time. This suggests that the narrative of ever-increasing WBT temperatures may not be true, at least for Singapore. However, it is possible that there are more extreme values, which would still pose a problem to human biology.
-
-The greenhouse gases have all increased over time, due to human intervention. This increase is the basis upon which climate modeling for the future is made. The skew of the data shows that some of the variables are not normally distributed. This can affect the accuracy of statistical analyses. The outliers in the data should be investigated to determine if they are legitimate or if they are due to errors in the data collection process.
-
-Overall, the study's findings suggest that climate change is having a significant impact on the WBT in Singapore. The government should continue to monitor the WBT and other climate-related variables, and develop policies to mitigate the effects of climate change on the country's climate.
-
-Reference
-1. (https://data.gov.sg/dataset/wet-bulb-temperature-hourly)
-2. (https://data.gov.sg/dataset/surface-air-temperature-monthly-mean)
-3. (https://tablebuilder.singstat.gov.sg/table/TS/M890081) 
-4. (https://gml.noaa.gov/ccgg/trends/data.html)
-5. (https://gml.noaa.gov/ccgg/trends_ch4/)
-6. (https://gml.noaa.gov/ccgg/trends_n2o/)
-7. (https://gml.noaa.gov/ccgg/trends_sf6/)
-8. (https://openstax.org/books/biology-2e/pages/33-3-homeostasis)
-9. (https://cdn.kastatic.org/ka-perseus-images/69ad70de87b8e05dcbd1708d4f48dc176e1276e9.png)
-10. (https://link.springer.com/referenceworkentry/10.1007/1-4020-3266-8_94)
-11. (https://www.weather.gov/images/safety/heatindexchart-650.jpg)
-12. (https://newscenter.lbl.gov/2022/08/24/no-more-underestimating-heat-waves/)
-13. (https://www.weather.gov/source/zhu/ZHU_Training_Page/definitions/dry_wet_bulb_definition/dry_wet_bulb.html)
-14. (https://physicscalc.com/physics/wet-bulb-calculator/)
-15. (https://www.theguardian.com/science/2022/jul/31/why-you-need-to-worry-about-the-wet-bulb-temperature)
-16. (https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7209987/)
-17. (https://www.washingtonpost.com/weather/2021/07/24/wet-bulb-temperature-extreme-heat/)
-18. (https://climate.nasa.gov/explore/ask-nasa-climate/3151/too-hot-to-handle-how-climate-change-may-make-some-places-too-hot-to-live/)
-19. (https://www.washingtonpost.com/business/energy/2023/07/04/explainer-how-extreme-heat-and-high-wet-bulb-temperatures-kill-people/83bca63e-1ada-11ee-be41-a036f4b098ec_story.html)
-20. (https://journals.physiology.org/doi/full/10.1152/japplphysiol.00738.2021)
-21. (https://phys.org/news/2020-05-potentially-fatal-combinations-humidity-emerging.html
-22. (https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7209987/)
-23. (https://gml.noaa.gov/ccgg/trends/data.html)
-24. (https://www.nrdc.org/stories/greenhouse-effect-101#gases)
-25. (https://www.epa.gov/climatechange-science/basics-climate-change) 
-26. (https://www.scientificamerican.com/article/what-causes-humidity/)
-27. (https://sealevel.jpl.nasa.gov/ocean-observation/understanding-climate/air-and-water/)
-28. (https://www.channelnewsasia.com/singapore/singapore-weather-40-degrees-celsius-heatwave-global-warming-aircon-3597176)
-29. (https://www.gfdl.noaa.gov/research_highlight/heat-stress-reduces-labor-capacity-under-climate-warming/)
-30. (https://www.ilo.org/global/about-the-ilo/newsroom/news/WCMS_794475/lang--en/index.htm)
-31. (https://www.straitstimes.com/singapore/environment/nus-scientists-to-study-construction-workers-risk-of-heat-stress)
-32. (https://www.omnicalculator.com/physics/wet-bulb)
-33. (https://www.carbonbrief.org/guest-post-investigating-climate-changes-humidity-paradox/)
-34. (https://www.researchgate.net/publication/339398733_Singapore%27s_Second_National_Climate_Change_Study_Climate_Projections_to_2100_-_Report_for_Stakeholders)
-35. (https://www.iisd.org/articles/deep-dive/precautionary-principle)
-36. (https://online.hbs.edu/blog/post/tragedy-of-the-commons-impact-on-sustainability-issues)
+**Author:** Wes Lee  
+🔗 [LinkedIn](https://www.linkedin.com/in/wes-lee) · 💻 Portfolio available upon request  
+📜 License: MIT
