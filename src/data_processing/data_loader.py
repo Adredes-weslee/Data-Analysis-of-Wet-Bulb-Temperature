@@ -72,47 +72,42 @@ def load_data(data_folder):
         data['climate_vars'] = pd.read_csv(climate_vars_path)
         logger.info(f"Loaded climate variables data: {data['climate_vars'].shape[0]} records")
     except FileNotFoundError:
-        logger.error(f"Climate variables data file not found at {climate_vars_path}")
-    
-    # Carbon dioxide data
+        logger.error(f"Climate variables data file not found at {climate_vars_path}")    # Carbon dioxide data
     try:
         co2_path = os.path.join(raw_data_path, 'co2_mm_mlo.csv')
-        data['co2'] = pd.read_csv(co2_path, 
-                                  header=62, 
-                                  usecols=['year', 'month', 'average'])
+        # Using comment='#' to skip header comments
+        data['co2'] = pd.read_csv(co2_path, comment='#')
         logger.info(f"Loaded CO2 data: {data['co2'].shape[0]} records")
     except FileNotFoundError:
         logger.error(f"CO2 data file not found at {co2_path}")
-    
-    # Methane data
+    except Exception as e:
+        logger.error(f"Error loading CO2 data: {e}")    # Methane data
     try:
         ch4_path = os.path.join(raw_data_path, 'ch4_mm_gl.csv')
-        data['ch4'] = pd.read_csv(ch4_path,
-                               header=62,
-                               usecols=['year', 'month', 'average'])
+        data['ch4'] = pd.read_csv(ch4_path, comment='#')
         logger.info(f"Loaded CH4 data: {data['ch4'].shape[0]} records")
     except FileNotFoundError:
         logger.error(f"CH4 data file not found at {ch4_path}")
-        
-    # Nitrous oxide data
+    except Exception as e:
+        logger.error(f"Error loading CH4 data: {e}")
+          # Nitrous oxide data
     try:
         n2o_path = os.path.join(raw_data_path, 'n2o_mm_gl.csv')
-        data['n2o'] = pd.read_csv(n2o_path,
-                               header=62,
-                               usecols=['year', 'month', 'average'])
+        data['n2o'] = pd.read_csv(n2o_path, comment='#')
         logger.info(f"Loaded N2O data: {data['n2o'].shape[0]} records")
     except FileNotFoundError:
         logger.error(f"N2O data file not found at {n2o_path}")
-        
-    # Sulfur hexafluoride data
+    except Exception as e:
+        logger.error(f"Error loading N2O data: {e}")
+          # Sulfur hexafluoride data
     try:
         sf6_path = os.path.join(raw_data_path, 'sf6_mm_gl.csv')
-        data['sf6'] = pd.read_csv(sf6_path,
-                               header=62,
-                               usecols=['year', 'month', 'average'])
+        data['sf6'] = pd.read_csv(sf6_path, comment='#')
         logger.info(f"Loaded SF6 data: {data['sf6'].shape[0]} records")
     except FileNotFoundError:
         logger.error(f"SF6 data file not found at {sf6_path}")
+    except Exception as e:
+        logger.error(f"Error loading SF6 data: {e}")
     
     # Check if any data was loaded
     if not data:
@@ -148,24 +143,36 @@ def clean_wet_bulb_data(df):
     # Copy the dataframe to avoid modifying the original
     df_cleaned = df.copy()
     
-    # Convert datetime string to datetime object
-    df_cleaned['date'] = pd.to_datetime(df_cleaned['Date Time'])
+    # Check if we have wbt_date and wbt_time columns (new format)
+    if 'wbt_date' in df_cleaned.columns and 'wbt_time' in df_cleaned.columns:
+        # Convert date and time columns to a single datetime
+        df_cleaned['date'] = pd.to_datetime(df_cleaned['wbt_date'])
+    else:
+        # Fallback for the old format (Date Time column)
+        df_cleaned['date'] = pd.to_datetime(df_cleaned['Date Time'])
     
     # Create a year-month column for aggregation
     df_cleaned['year_month'] = df_cleaned['date'].dt.to_period('M')
+      # Get the wet bulb temperature column name
+    if 'wet_bulb_temperature' in df_cleaned.columns:
+        temp_col = 'wet_bulb_temperature'
+    elif 'Wet Bulb Temperature (°C)' in df_cleaned.columns:
+        temp_col = 'Wet Bulb Temperature (°C)'
+    else:
+        raise ValueError("Cannot find wet bulb temperature column in the dataset")
     
     # Group by year-month and calculate monthly statistics
     monthly_stats = df_cleaned.groupby('year_month').agg(
-        avg_wet_bulb=('Wet Bulb Temperature (°C)', 'mean'),
-        max_wet_bulb=('Wet Bulb Temperature (°C)', 'max'),
-        min_wet_bulb=('Wet Bulb Temperature (°C)', 'min'),
-        std_wet_bulb=('Wet Bulb Temperature (°C)', 'std')
+        avg_wet_bulb=(temp_col, 'mean'),
+        max_wet_bulb=(temp_col, 'max'),
+        min_wet_bulb=(temp_col, 'min'),
+        std_wet_bulb=(temp_col, 'std')
     ).reset_index()
-    
-    # Convert period to datetime for merging
+      # Convert period to datetime for merging
     monthly_stats['month'] = monthly_stats['year_month'].dt.to_timestamp()
     
-    return monthly_stats
+    # Return the dataframe without the year_month column to avoid Period datatype issues
+    return monthly_stats[['month', 'avg_wet_bulb', 'max_wet_bulb', 'min_wet_bulb', 'std_wet_bulb']]
 
 
 def clean_greenhouse_gas_data(df, gas_name):
@@ -192,14 +199,29 @@ def clean_greenhouse_gas_data(df, gas_name):
     # Copy the dataframe to avoid modifying the original
     df_cleaned = df.copy()
     
+    # Identify the average column based on the headers in the file
+    avg_col = None
+    for col in df_cleaned.columns:
+        if 'average' in str(col).lower():
+            avg_col = col
+            break
+            
+    # If no average column found, use the 4th column (index 3) which typically contains the concentration
+    if not avg_col and len(df_cleaned.columns) > 3:
+        avg_col = df_cleaned.columns[3]
+    
+    # Make sure we have year and month columns
+    year_col = 'year' if 'year' in df_cleaned.columns else df_cleaned.columns[0]
+    month_col = 'month' if 'month' in df_cleaned.columns else df_cleaned.columns[1]
+    
     # Create new date column using month and year
-    df_cleaned['date'] = df_cleaned['year'].astype(str) + "-" + df_cleaned['month'].astype(str)
+    df_cleaned['date'] = df_cleaned[year_col].astype(str) + "-" + df_cleaned[month_col].astype(str)
     
     # Convert to datetime
     df_cleaned['month'] = pd.to_datetime(df_cleaned['date'], format='%Y-%m')
     
     # Rename and select columns
-    df_cleaned = df_cleaned.rename(columns={'average': f'average_{gas_name}'})
+    df_cleaned = df_cleaned.rename(columns={avg_col: f'average_{gas_name}'})
     df_cleaned = df_cleaned[['month', f'average_{gas_name}']]
     
     return df_cleaned
@@ -228,18 +250,87 @@ def clean_climate_vars_data(df):
     """
     # Copy the dataframe to avoid modifying the original
     df_cleaned = df.copy()
+      # Find the row with 'Data Series' in the first column
+    data_row_idx = None
+    for i, row in df_cleaned.iterrows():
+        if isinstance(row.iloc[0], str) and 'Data Series' in row.iloc[0]:
+            data_row_idx = i
+            break
     
-    # Convert date string to datetime
-    df_cleaned['month'] = pd.to_datetime(df_cleaned['month'], format='%Y %b')
+    if data_row_idx is not None:
+        # Get column names from this row
+        header_row = df_cleaned.iloc[data_row_idx]
+        # Get data below this row
+        df_cleaned = df_cleaned.iloc[data_row_idx+1:].reset_index(drop=True)
+        # Set column names (avoid None or empty)
+        columns = []
+        for col in header_row:
+            if pd.isna(col) or col == '':
+                columns.append(f'col_{len(columns)}')
+            else:
+                columns.append(col)
+        df_cleaned.columns = columns
+      # Filter out rows with non-date entries like "Footnotes:"
+    date_col = df_cleaned.columns[0]
+    valid_rows = []
+    for i, value in enumerate(df_cleaned[date_col]):
+        if isinstance(value, str) and len(value.strip()) > 0:
+            # Keep only rows that look like they have a year at the beginning (e.g., "2023 May")
+            if value.strip()[0:4].isdigit():
+                valid_rows.append(i)
     
-    # Rename columns for clarity
-    df_cleaned = df_cleaned.rename(columns={
-        'Total Rainfall (mm)': 'total_rainfall',
-        'Daily Mean Sunshine (hrs)': 'daily_mean_sunshine',
-        '24 Hours Mean Relative Humidity (%)': 'mean_relative_humidity'
-    })
+    # Filter dataframe to keep only valid rows
+    df_cleaned = df_cleaned.iloc[valid_rows].reset_index(drop=True)
     
-    return df_cleaned[['month', 'total_rainfall', 'daily_mean_sunshine', 'mean_relative_humidity']]
+    # Extract date from first column (Data Series), which contains values like '2023 May'
+    df_cleaned['month'] = pd.to_datetime(df_cleaned[date_col].str.strip(), format='%Y %b', errors='coerce')
+    
+    # Drop rows where date conversion failed
+    df_cleaned = df_cleaned.dropna(subset=['month'])
+      # Identify and rename columns based on column names
+    rainfall_col = None
+    sunshine_col = None
+    humidity_col = None
+    
+    # Look for columns by keyword
+    for col in df_cleaned.columns:
+        col_str = str(col).lower()
+        if 'rainfall' in col_str or 'rain' in col_str:
+            rainfall_col = col
+        elif 'sunshine' in col_str or 'sun' in col_str:
+            sunshine_col = col
+        elif 'humidity' in col_str or 'humid' in col_str:
+            humidity_col = col
+    
+    # If not found, use positions
+    if rainfall_col is None and len(df_cleaned.columns) > 1:
+        rainfall_col = df_cleaned.columns[1]  # Second column is usually rainfall
+    if sunshine_col is None and len(df_cleaned.columns) > 2:
+        sunshine_col = df_cleaned.columns[2]  # Third column is usually sunshine
+    if humidity_col is None and len(df_cleaned.columns) > 3:
+        humidity_col = df_cleaned.columns[3]  # Fourth column is usually humidity
+    
+    # Create a new dataframe with standardized columns
+    result = pd.DataFrame()
+    result['month'] = df_cleaned['month']
+    
+    # Add data columns if they exist
+    if rainfall_col:
+        result['total_rainfall'] = pd.to_numeric(df_cleaned[rainfall_col], errors='coerce')
+    else:
+        result['total_rainfall'] = np.nan
+        
+    if sunshine_col:
+        result['daily_mean_sunshine'] = pd.to_numeric(df_cleaned[sunshine_col], errors='coerce')
+    else:
+        result['daily_mean_sunshine'] = np.nan
+        
+    if humidity_col:
+        result['mean_relative_humidity'] = pd.to_numeric(df_cleaned[humidity_col], errors='coerce')
+    else:
+        result['mean_relative_humidity'] = np.nan
+    
+    return result
 
 
 def clean_air_temp_data(df):
@@ -266,10 +357,10 @@ def clean_air_temp_data(df):
     
     # Convert month column to datetime
     df_cleaned['month'] = pd.to_datetime(df_cleaned['month'], format='%Y-%m')
-    
-    # Rename columns for clarity
+      # Rename columns for clarity
     df_cleaned = df_cleaned.rename(columns={
-        'surface_air_temperature': 'mean_air_temp'
+        'surface_air_temperature': 'mean_air_temp',
+        'mean_temp': 'mean_air_temp'  # Add this for the actual column name in the data
     })
     
     return df_cleaned[['month', 'mean_air_temp']]

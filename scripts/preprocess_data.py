@@ -20,27 +20,31 @@ import logging
 from pathlib import Path
 import pandas as pd
 
+# Add project root to path
+project_root = Path(__file__).parent.parent
+
+# Ensure logs directory exists
+logs_dir = project_root / 'logs'
+logs_dir.mkdir(exist_ok=True)
+
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler('preprocessing.log'),
+        logging.FileHandler(logs_dir / 'preprocessing.log'),
         logging.StreamHandler()
     ]
 )
 logger = logging.getLogger(__name__)
-
-# Add project root to path
-project_root = Path(__file__).parent.parent
 import sys
 sys.path.insert(0, str(project_root))
 
 # Import our data processing functions
 from src.data_processing.data_loader import (
-    load_data, preprocess_wet_bulb_data, 
-    preprocess_ghg_data, preprocess_climate_vars,
-    merge_datasets, save_processed_data
+    load_data, clean_wet_bulb_data, 
+    clean_greenhouse_gas_data, clean_climate_vars_data,
+    clean_air_temp_data
 )
 
 def main():
@@ -67,6 +71,17 @@ def main():
     -------
     None
         The processed data is saved to disk as CSV file
+        
+    Side Effects
+    -----------
+    - Creates preprocessing.log file in the current directory
+    - Creates data/processed directory if it doesn't exist
+    - Writes processed data to data/processed/final_dataset.csv
+    
+    Raises
+    ------
+    Exception
+        If any required dataset is missing or if processing fails
     """
     logger.info("Starting data preprocessing")
     
@@ -85,27 +100,49 @@ def main():
         # Check if all necessary data is loaded
         required_datasets = ['wet_bulb', 'air_temp', 'climate_vars', 'co2']
         missing_data = [dataset for dataset in required_datasets if dataset not in data_dict or data_dict[dataset] is None]
-        
         if missing_data:
             logger.error(f"Missing required datasets: {missing_data}")
             logger.error("Cannot proceed with preprocessing")
             return
+            
+        # Process and merge all datasets
+        logger.info("Processing and merging datasets")
+        # Use the functions from data_loader.py
+        wet_bulb_monthly = clean_wet_bulb_data(data_dict['wet_bulb'])
+        climate_vars_clean = clean_climate_vars_data(data_dict['climate_vars'])
+        air_temp_clean = clean_air_temp_data(data_dict['air_temp'])
         
-        # Process wet bulb temperature data
-        logger.info("Processing wet bulb temperature data")
-        wet_bulb_monthly = preprocess_wet_bulb_data(data_dict['wet_bulb'])
+        # Process greenhouse gas data if available
+        co2_clean = None
+        ch4_clean = None
+        n2o_clean = None
+        sf6_clean = None
         
-        # Process climate variables data
-        logger.info("Processing climate variables data")
-        climate_vars = preprocess_climate_vars(data_dict)
+        if 'co2' in data_dict and data_dict['co2'] is not None:
+            co2_clean = clean_greenhouse_gas_data(data_dict['co2'], 'co2')
+        if 'ch4' in data_dict and data_dict['ch4'] is not None:
+            ch4_clean = clean_greenhouse_gas_data(data_dict['ch4'], 'ch4')
+        if 'n2o' in data_dict and data_dict['n2o'] is not None:
+            n2o_clean = clean_greenhouse_gas_data(data_dict['n2o'], 'n2o')
+        if 'sf6' in data_dict and data_dict['sf6'] is not None:
+            sf6_clean = clean_greenhouse_gas_data(data_dict['sf6'], 'sf6')
+            
+        # Merge datasets manually since we're processing them individually
+        logger.info("Merging processed datasets")
+        final_df = wet_bulb_monthly.merge(air_temp_clean, on='month', how='left')
+        final_df = final_df.merge(climate_vars_clean, on='month', how='left')
         
-        # Process greenhouse gas data
-        logger.info("Processing greenhouse gas data")
-        ghg_data = preprocess_ghg_data(data_dict)
-        
-        # Merge all datasets
-        logger.info("Merging datasets")
-        final_df = merge_datasets(wet_bulb_monthly, climate_vars, ghg_data)
+        if co2_clean is not None:
+            final_df = final_df.merge(co2_clean, on='month', how='left')
+        if ch4_clean is not None:
+            final_df = final_df.merge(ch4_clean, on='month', how='left')
+        if n2o_clean is not None:
+            final_df = final_df.merge(n2o_clean, on='month', how='left')
+        if sf6_clean is not None:
+            final_df = final_df.merge(sf6_clean, on='month', how='left')
+            
+        # Set month as index for time series analysis
+        final_df.set_index('month', inplace=True)
         
         # Save processed data
         output_path = os.path.join(processed_data_path, 'final_dataset.csv')

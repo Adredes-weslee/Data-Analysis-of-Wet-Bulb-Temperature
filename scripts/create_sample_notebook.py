@@ -33,9 +33,22 @@ def main():
     -------
     None
         Creates and saves a Jupyter notebook file in the notebooks directory
+        
+    Side Effects
+    -----------
+    - Creates the notebooks directory if it doesn't exist
+    - Writes a new Jupyter notebook file at notebooks/sample_analysis.ipynb
+    - Overwrites any existing sample_analysis.ipynb file without warning
+    
+    Raises
+    ------
+    PermissionError
+        If the script doesn't have permission to write to the notebooks directory
+    Exception
+        For other issues that may occur during notebook creation or writing
     """
-    # Define notebook path
-    project_root = Path(__file__).parent
+    # Define notebook path (considering script is in scripts/ directory)
+    project_root = Path(__file__).parent.parent
     notebook_path = os.path.join(str(project_root), 'notebooks', 'sample_analysis.ipynb')
     
     # Create notebooks directory if it doesn't exist

@@ -53,11 +53,26 @@ def main():
     -------
     None
         Results are printed to console and saved as files
+        
+    Side Effects
+    -----------
+    - Creates an output directory if it doesn't exist
+    - Saves visualization files to the output directory
+    - Prints analysis results to the console
+        
+    Notes
+    -----
+    The function expects data to be in a "data" directory at the same level as
+    the script and saves output to an "output" directory that it creates if needed.
+    
+    Raises
+    ------
+    Exception
+        If data loading or preparation fails
     """
     print("Starting wet bulb temperature analysis...")
-    
-    # Define data folder path
-    data_folder = Path(__file__).parent / "data"
+      # Define data folder path - considering script is in scripts/ directory
+    data_folder = Path(__file__).parent.parent / "data"
     
     # Set plot style
     set_plot_style()
@@ -75,8 +90,8 @@ def main():
     print(data.head())
     
     # Create output directory for plots
-    output_dir = Path(__file__).parent / "output"
-    output_dir.mkdir(exist_ok=True)
+    output_dir = Path(__file__).parent.parent / "data" / "output"
+    output_dir.mkdir(exist_ok=True, parents=True)
     
     # Generate some basic visualizations
     print("\nGenerating visualizations...")

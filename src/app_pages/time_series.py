@@ -66,8 +66,7 @@ def show(df):
     if st.checkbox("Show Monthly Patterns"):
         fig = plot_monthly_patterns(filtered_df, var_to_plot)
         st.pyplot(fig)
-        
-    # Year-over-year comparison
+          # Year-over-year comparison
     if st.checkbox("Show Year-over-Year Comparison"):
         """
         Display year-over-year comparison of the selected variable
@@ -81,14 +80,17 @@ def show(df):
         -------
         None
         """
-        # Group by year and month
-        yearly_data = filtered_df.copy()
-        yearly_data['year'] = yearly_data.index.year
-        yearly_data['month'] = yearly_data.index.month
+        # Create a new dataframe without the datetime index to avoid the ambiguity
+        yearly_data = pd.DataFrame()
+        
+        # Extract year and month from the index explicitly
+        yearly_data['year'] = filtered_df.index.year
+        yearly_data['month_num'] = filtered_df.index.month
+        yearly_data[var_to_plot] = filtered_df[var_to_plot].values
         
         # Pivot table for year-over-year comparison
         pivot_data = yearly_data.pivot_table(
-            index='month', 
+            index='month_num', 
             columns='year', 
             values=var_to_plot, 
             aggfunc='mean'
@@ -99,13 +101,17 @@ def show(df):
         
         for year in pivot_data.columns:
             ax.plot(pivot_data.index, pivot_data[year], marker='o', label=str(year))
-            
         ax.set_xlabel('Month', fontsize=12)
         ax.set_ylabel(var_to_plot, fontsize=12)
         ax.set_title(f'Year-over-Year Comparison of {var_to_plot}', fontsize=14)
-        ax.set_xticks(range(1, 13))
-        ax.set_xticklabels(['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
-                          'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'])
+        
+        # Set proper tick positions and labels to avoid categorical warnings
+        month_labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
+                        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+        # Make sure the ticks are at the actual month number positions (1-12)
+        ax.set_xticks(list(range(1, 13)))
+        ax.set_xticklabels(month_labels)
+        
         ax.legend(title='Year')
         ax.grid(alpha=0.3)
         

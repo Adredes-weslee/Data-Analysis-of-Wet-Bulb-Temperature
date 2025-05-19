@@ -114,9 +114,25 @@ def plot_correlation_matrix(df, title='Correlation Matrix'):
     -------
     matplotlib.figure.Figure
         The Figure object containing the plot
-    """
-    # Calculate the correlation matrix
-    corr_matrix = df.corr()
+        
+    Notes
+    -----
+    This function uses pandas.DataFrame.corr() which computes the pairwise correlation
+    of columns, excluding NA/null values. Only numeric columns are included in the
+    correlation calculation.
+    
+    The upper triangle of the correlation matrix is masked to avoid redundant display
+    of the symmetric matrix.
+    
+    Raises
+    ------
+    ValueError
+        If the DataFrame has no numeric columns for correlation calculation
+    """    # Select only numeric columns for correlation
+    numeric_df = df.select_dtypes(include=['number'])
+    
+    # Calculate the correlation matrix on numeric columns only
+    corr_matrix = numeric_df.corr()
     
     # Create a mask for the upper triangle
     mask = np.triu(np.ones_like(corr_matrix, dtype=bool))
@@ -200,8 +216,11 @@ def plot_boxplots(df, columns, title='Distribution of Variables'):
     matplotlib.figure.Figure
         The Figure object containing the plot
     """
-    # Melt the dataframe for easier plotting
-    df_melt = pd.melt(df.reset_index(), id_vars='month', value_vars=columns, 
+    # Create a copy of the data without the index to avoid conflicts
+    df_copy = df[columns].copy().reset_index(drop=True)
+    
+    # Melt the dataframe for easier plotting, without using the index
+    df_melt = pd.melt(df_copy, value_vars=columns, 
                       var_name='Variable', value_name='Value')
     
     # Create the figure
@@ -244,6 +263,18 @@ def plot_monthly_patterns(df, column_name, title=None):
     -------
     matplotlib.figure.Figure
         The Figure object containing the plot
+        
+    Notes
+    -----
+    This function creates a copy of the input DataFrame and adds a 'month_num' column
+    derived from the DataFrame's index. The original DataFrame is not modified.
+    
+    Raises
+    ------
+    KeyError
+        If the specified column_name does not exist in the DataFrame
+    TypeError
+        If the DataFrame's index is not a datetime index
     """
     # Extract month from index and create a new column
     monthly_data = df.copy()
@@ -252,8 +283,9 @@ def plot_monthly_patterns(df, column_name, title=None):
     # Create the figure
     fig, ax = plt.subplots(figsize=(12, 6))
     
-    # Create the boxplot
-    sns.boxplot(x='month_num', y=column_name, data=monthly_data, ax=ax)
+    # Create the boxplot with order to ensure months appear in correct order
+    sns.boxplot(x='month_num', y=column_name, data=monthly_data, ax=ax, 
+                order=list(range(1, 13)))  # Explicitly specify month order 1-12
     
     # Add title and labels
     if title:
@@ -264,9 +296,12 @@ def plot_monthly_patterns(df, column_name, title=None):
     ax.set_xlabel('Month', fontsize=12)
     ax.set_ylabel(column_name, fontsize=12)
     
-    # Set x-axis labels to month names
+    # Set x-axis labels to month names with proper tick positions
     month_names = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
                   'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+    
+    # Make sure ticks match the actual data values (1-12)
+    ax.set_xticks(list(range(1, 13)))
     ax.set_xticklabels(month_names)
     
     return fig

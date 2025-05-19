@@ -64,12 +64,16 @@ def create_temporal_features(df):
     Returns
     -------
     pandas.DataFrame
-        DataFrame with additional temporal features:
+        A new DataFrame (original is not modified) with additional temporal features:
         - year: The year component of the date
         - month: The month component (1-12)
         - quarter: The quarter (1-4)
-        - season: The season as a string ('Winter', 'Spring', 'Summer', 'Fall')
         - season_numeric: The season as a number (1-4)
+        
+    Notes
+    -----
+    This function creates and returns a new DataFrame rather than modifying
+    the input DataFrame in-place.
     """
     # Create a copy to avoid modifying the original
     df_new = df.copy()
@@ -78,11 +82,10 @@ def create_temporal_features(df):
     df_new['year'] = df_new.index.year
     df_new['month'] = df_new.index.month
     df_new['quarter'] = df_new.index.quarter
-    df_new['season'] = ((df_new.index.month % 12 + 3) // 3).map({1: 'Winter', 2: 'Spring', 3: 'Summer', 4: 'Fall'})
     
-    # Create season numeric (cyclical encoding could be better but this is simpler)
-    season_map = {'Winter': 1, 'Spring': 2, 'Summer': 3, 'Fall': 4}
-    df_new['season_numeric'] = df_new['season'].map(season_map)
+    # Create season numeric directly instead of going through string mapping
+    # Winter: 1 (Dec-Feb), Spring: 2 (Mar-May), Summer: 3 (Jun-Aug), Fall: 4 (Sep-Nov)
+    df_new['season_numeric'] = ((df_new.index.month % 12 + 3) // 3)
     
     return df_new
 
@@ -104,9 +107,24 @@ def create_interaction_features(df):
     Returns
     -------
     pandas.DataFrame
-        DataFrame with additional features:
+        A new DataFrame (original is not modified) with additional features:
         - temp_humidity_interaction: Product of mean air temperature and relative humidity
+          (only created if both columns exist)
         - greenhouse_composite: Normalized sum of greenhouse gas concentrations
+          (only created if at least 2 gas columns exist)
+          
+    Notes
+    -----
+    This function creates and returns a new DataFrame rather than modifying
+    the input DataFrame in-place.
+    
+    Certain interaction features will only be created if their required source columns
+    exist in the input DataFrame.
+    
+    Raises
+    ------
+    ValueError
+        Indirectly from MinMaxScaler if any greenhouse gas column contains non-numeric values
     """
     # Create a copy to avoid modifying the original
     df_new = df.copy()
@@ -147,7 +165,22 @@ def create_lag_features(df, columns, lags=[1, 3, 6, 12]):
     Returns
     -------
     pandas.DataFrame
-        DataFrame with additional lag features named as {column_name}_lag_{lag_period}
+        A new DataFrame (original is not modified) with additional lag features 
+        named as {column_name}_lag_{lag_period}. Note that lag features will contain
+        NaN values for the first N rows where N is the largest lag value.
+        
+    Notes
+    -----
+    This function creates and returns a new DataFrame rather than modifying
+    the input DataFrame in-place.
+    
+    Only columns that exist in the input DataFrame will have lag features created.
+    Non-existent column names in the columns parameter will be silently ignored.
+    
+    Raises
+    ------
+    TypeError
+        If columns parameter is not a list or lags parameter is not a list
     """
     # Create a copy to avoid modifying the original
     df_new = df.copy()
@@ -182,9 +215,27 @@ def create_rolling_features(df, columns, windows=[3, 6, 12]):
     Returns
     -------
     pandas.DataFrame
-        DataFrame with additional rolling features:
+        A new DataFrame (original is not modified) with additional rolling features:
         - {column_name}_rolling_mean_{window}: Rolling mean for each window size
         - {column_name}_rolling_std_{window}: Rolling standard deviation for each window size
+        
+        Note that rolling features will contain NaN values for the first N rows
+        where N is the window size.
+        
+    Notes
+    -----
+    This function creates and returns a new DataFrame rather than modifying
+    the input DataFrame in-place.
+    
+    Only columns that exist in the input DataFrame will have rolling features created.
+    Non-existent column names in the columns parameter will be silently ignored.
+    
+    Raises
+    ------
+    TypeError
+        If parameters are not of the expected types
+    ValueError
+        If any window size is less than 1
     """
     # Create a copy to avoid modifying the original
     df_new = df.copy()
@@ -214,7 +265,8 @@ def prepare_features_for_modeling(df, target_col, drop_cols=None):
     target_col : str
         Name of the target variable column
     drop_cols : list, optional
-        List of column names to drop from the dataset
+        List of column names to drop from the dataset. If None, no columns will be dropped
+        except the target column.
         
     Returns
     -------
@@ -225,6 +277,20 @@ def prepare_features_for_modeling(df, target_col, drop_cols=None):
             Target variable series
         feature_names : list
             List of feature column names used in X
+            
+    Notes
+    -----
+    This function will:
+    1. Remove columns specified in drop_cols
+    2. Drop rows with NaN values
+    3. Separate target variable from features
+    
+    Raises
+    ------
+    KeyError
+        If target_col is not present in the DataFrame
+    ValueError
+        If all data is dropped due to NaN values
     """
     # Create a copy to avoid modifying the original
     df_new = df.copy()

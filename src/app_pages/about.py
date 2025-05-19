@@ -115,8 +115,8 @@ def show(df=None):
     with st.expander("Contact Information"):
         st.write("""
         For questions or feedback about this project, please contact:
-        - Email: example@example.com
-        - GitHub: [GitHub Repository Link]
+        - Email: weslee.qb@gamil.com
+        - GitHub: https://github.com/Adredes-weslee
         """)
         
     # Add data acknowledgments

@@ -5,6 +5,10 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import os
+from pathlib import Path
+from datetime import datetime
+
 from src.models.regression import (
     preprocess_for_regression, build_linear_regression_model,
     evaluate_regression_model, plot_actual_vs_predicted,
@@ -134,12 +138,11 @@ def show(df):
             else:
                 model_df = df
                 selected_features = feature_vars
-        
-        # Advanced options
+          # Advanced options
         with st.expander("Advanced Options"):
             handle_missing = st.radio(
                 "How to handle missing values",
-                options=["Drop rows with missing values", "Fill with mean", "Fill with median"],
+                options=["Drop rows with missing values", "Fill with mean", "Fill with median", "Fill with zero"],
                 index=0
             )
         
@@ -150,15 +153,41 @@ def show(df):
                 return
                 
             with st.spinner("Training model..."):
-                # Handle missing values based on user selection
-                if handle_missing == "Fill with mean":
-                    model_df = model_df.fillna(model_df.mean())
-                elif handle_missing == "Fill with median":
-                    model_df = model_df.fillna(model_df.median())
-                # Default is to drop rows with missing values
-                
-                # Preprocess data
                 try:
+                    # Make a copy to avoid modifying original data
+                    model_df_clean = model_df.copy()
+                    
+                    # First convert any non-numeric data to numeric
+                    for col in selected_features + [target_var]:
+                        if col in model_df_clean.columns and model_df_clean[col].dtype == 'object':
+                            model_df_clean[col] = pd.to_numeric(model_df_clean[col], errors='coerce')
+                    
+                    # Handle missing values based on user selection
+                    if handle_missing == "Fill with mean":
+                        model_df_clean = model_df_clean.fillna(model_df_clean.mean())
+                    elif handle_missing == "Fill with median":
+                        model_df_clean = model_df_clean.fillna(model_df_clean.median()) 
+                    elif handle_missing == "Fill with zero":
+                        model_df_clean = model_df_clean.fillna(0)
+                    # else: Default is to drop rows with missing values in preprocess_for_regression
+                    
+                    # Check that we have enough valid data
+                    relevant_cols = selected_features + [target_var]
+                    valid_data_count = model_df_clean[relevant_cols].dropna().shape[0]
+                    
+                    if valid_data_count < 10:  # Minimum sample size
+                        st.error(f"Not enough valid data points ({valid_data_count}) after handling missing values. Try a different method.")
+                        return
+                        
+                    st.info(f"Using {valid_data_count} valid data points for model training")
+                    model_df = model_df_clean
+                    
+                except Exception as e:
+                    st.error(f"Error preprocessing data: {e}")
+                    return
+                  # Preprocess data
+                try:
+                    st.info("Preprocessing data and training model...")
                     X_train, X_test, y_train, y_test, scaler = preprocess_for_regression(
                         model_df, target_var, selected_features, test_size=test_size, random_state=int(random_state)
                     )
@@ -207,7 +236,6 @@ def show(df):
                     st.write("**Feature Importance:**")
                     fig = plot_feature_importance(model, selected_features)
                     st.pyplot(fig)
-                    
                     # Model equation
                     st.subheader("Model Equation")
                     
@@ -218,36 +246,44 @@ def show(df):
                         if i == 0:
                             equation += f"{abs(coef):.4f} × {feature} "
                         else:
-                            equation += f"{sign} {abs(coef):.4f} × {feature} "
-                    
+                            equation += f"{sign} {abs(coef):.4f} × {feature} "                    
                     if 'intercept' in results:
                         sign = "+" if results['intercept'] >= 0 else "-"
                         equation += f"{sign} {abs(results['intercept']):.4f}"
                     
                     st.write(equation)
+                      # Model predictions section
+                    st.subheader("Download Results")
                     
-                    # Save model option
-                    if st.checkbox("Save model predictions to CSV"):
-                        try:
-                            import os
-                            from pathlib import Path
-                            
-                            # Create predictions dataframe
-                            predictions_df = pd.DataFrame({
-                                'actual': y_test,
-                                'predicted': y_test_pred,
-                                'residual': y_test - y_test_pred
-                            })
-                            
-                            # Save to output directory
-                            output_dir = Path(__file__).parent.parent.parent.parent / 'data' / 'output'
-                            output_dir.mkdir(exist_ok=True)
-                            
-                            output_path = output_dir / f"{target_var}_predictions.csv"
-                            predictions_df.to_csv(output_path)
-                            st.success(f"Saved predictions to {output_path}")
-                        except Exception as e:
-                            st.error(f"Error saving predictions: {e}")
+                    # Create predictions dataframe with proper index
+                    predictions_df = pd.DataFrame({
+                        'actual': y_test,
+                        'predicted': y_test_pred,
+                        'residual': y_test - y_test_pred
+                    })
+                    
+                    # Download section with centered button
+                    col1, col2, col3 = st.columns([1, 2, 1])
+                    
+                    with col2:
+                        # Encode CSV data for download
+                        csv_data = predictions_df.to_csv().encode('utf-8')
+                        
+                        # Create a descriptive filename
+                        safe_target_name = ''.join(c if c.isalnum() else '_' for c in target_var)
+                        current_date = datetime.now().strftime("%Y%m%d")
+                        filename = f"{safe_target_name}_predictions_{current_date}.csv"
+                        
+                        # Show the download button - made more prominent
+                        st.download_button(
+                            label="📥 Download CSV to Computer",
+                            data=csv_data,
+                            file_name=filename,
+                            mime="text/csv",
+                            key="download_predictions",
+                            help="Download the predictions directly to your computer",
+                            use_container_width=True
+                        )
                 except Exception as e:
                     st.error(f"Error in model training: {e}")
     else:

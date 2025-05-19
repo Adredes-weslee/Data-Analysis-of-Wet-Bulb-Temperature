@@ -62,7 +62,7 @@ def check_required_packages():
         Prints status messages to the console
     """
     required_packages = [
-        'pandas', 'numpy', 'matplotlib', 'seaborn', 'scikit-learn', 
+        'pandas', 'numpy', 'matplotlib', 'seaborn', 'sklearn', 
         'statsmodels', 'streamlit', 'jupyter', 'nbformat'
     ]
     
@@ -71,6 +71,15 @@ def check_required_packages():
     
     print("\nChecking required packages:")
     for package in required_packages:
+        if package == 'jupyter':
+            try:
+                notebook_module = importlib.import_module('notebook')
+                version = getattr(notebook_module, '__version__', 'unknown')
+                print(f"✅ {package}: {version}")
+            except ImportError:
+                print(f"❌ {package}: Not installed")
+                missing_packages.append(package)
+            continue
         try:
             module = importlib.import_module(package)
             version = getattr(module, '__version__', 'unknown')
@@ -92,7 +101,8 @@ def check_directory_structure():
     
     Verifies that all required directories for the project exist.
     This ensures that the code can find necessary files and save
-    outputs in the expected locations.
+    outputs in the expected locations. Missing directories will be
+    created automatically.
     
     Parameters
     ----------
@@ -102,9 +112,13 @@ def check_directory_structure():
     -------
     None
         Prints status messages to the console
+        
+    Side Effects
+    -----------
+    Creates missing directories if they don't exist
     """
     # Define expected directories
-    project_root = Path(__file__).parent
+    project_root = Path(__file__).parent.parent
     expected_dirs = [
         'data/raw', 'data/processed', 'data/output',
         'src/app_pages', 'src/data_processing', 'src/features', 
@@ -141,8 +155,13 @@ def check_data_files():
     -------
     None
         Prints status messages to the console
+        
+    Raises
+    ------
+    FileNotFoundError
+        Indirectly if the data directory doesn't exist (when trying to check files)
     """
-    data_dir = Path(__file__).parent / 'data' / 'raw'
+    data_dir = Path(__file__).parent.parent / 'data' / 'raw'
     required_files = [
         'wet-bulb-temperature-hourly.csv', 
         'surface-air-temperature-monthly-mean.csv',
