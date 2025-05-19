@@ -15,7 +15,7 @@ New to this project? Here's how to get started in minutes:
    # Create and activate environment (choose one)
    python -m venv venv && venv\Scripts\activate  # Option 1: Using pip
    # OR
-   conda env create -f environment.yml && conda activate wet-bulb-temp  # Option 2: Using conda
+   conda env create -f environment.yaml && conda activate wet-bulb-temp  # Option 2: Using conda
 
    # Install dependencies
    pip install -r requirements.txt  # If using pip
@@ -97,7 +97,7 @@ wet-bulb-temperature-analysis/
 │   └── visualization/   # Plotting functions
 ├── run_dashboard.py     # Script to run the Streamlit dashboard
 ├── requirements.txt     # Python dependencies (pip)
-├── environment.yml      # Python dependencies (conda)
+├── environment.yaml      # Python dependencies (conda)
 └── README.md            # Project documentation
 ```
 
@@ -129,7 +129,7 @@ pip install -r requirements.txt
 
 ```bash
 # Create and activate conda environment
-conda env create -f environment.yml
+conda env create -f environment.yaml
 conda activate wet-bulb-temp
 ```
 
