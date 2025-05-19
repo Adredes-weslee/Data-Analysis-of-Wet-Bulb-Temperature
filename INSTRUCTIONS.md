@@ -30,7 +30,7 @@ This document provides instructions on how to set up and use the Wet Bulb Temper
 
 1. Create and activate a conda environment:
    ```
-   conda env create -f environment.yml
+   conda env create -f environment.yaml
    conda activate wet-bulb-temp
    ```
 
@@ -152,10 +152,31 @@ The project is organized into the following key components:
 ```
 wet-bulb-temperature-analysis/
 ├── dashboard/           # Streamlit interactive dashboard
-├── data/                # Data files (raw, processed, and outputs)
+│   └── app.py           # Main dashboard application
+├── data/                # Data files
+│   ├── raw/             # Raw data files
+│   ├── processed/       # Cleaned and processed data
+│   └── output/          # Analysis outputs and visualizations
 ├── notebooks/           # Jupyter notebooks for analysis
+│   ├── data_analysis_of_wet_bulb_temperature.ipynb  # Original analysis
+│   ├── sample_analysis.ipynb                        # Generated sample notebook
+│   └── project_evolution.ipynb                      # Project structure explanation
 ├── scripts/             # Utility and analysis scripts
-├── src/                 # Source code organized in modules
+│   ├── analyze.py                  # Sample analysis script
+│   ├── preprocess_data.py          # Data preprocessing script
+│   ├── create_sample_notebook.py   # Generate sample notebook
+│   └── verify_environment.py       # Verify environment setup
+├── src/                 # Source code modules
+│   ├── app_pages/       # Modular dashboard pages
+│   ├── data_processing/ # Data loading and preprocessing
+│   ├── features/        # Feature engineering
+│   ├── models/          # Regression models
+│   ├── utils/           # Statistical utilities
+│   └── visualization/   # Plotting functions
+├── INSTRUCTIONS.md      # This file
+├── README.md            # Project overview and documentation
+├── requirements.txt     # Python dependencies (pip)
+├── environment.yml      # Python dependencies (conda)
 └── run_dashboard.py     # Convenience script to start the dashboard
 ```
 
