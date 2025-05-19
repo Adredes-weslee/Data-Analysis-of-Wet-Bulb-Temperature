@@ -138,7 +138,7 @@ def show(df):
             else:
                 model_df = df
                 selected_features = feature_vars
-          # Advanced options
+        # Advanced options
         with st.expander("Advanced Options"):
             handle_missing = st.radio(
                 "How to handle missing values",
@@ -185,7 +185,7 @@ def show(df):
                 except Exception as e:
                     st.error(f"Error preprocessing data: {e}")
                     return
-                  # Preprocess data
+                # Preprocess data
                 try:
                     st.info("Preprocessing data and training model...")
                     X_train, X_test, y_train, y_test, scaler = preprocess_for_regression(
@@ -232,11 +232,9 @@ def show(df):
                         fig = plot_residuals(y_test, y_test_pred)
                         st.pyplot(fig)
                     
-                    # Feature importance
                     st.write("**Feature Importance:**")
                     fig = plot_feature_importance(model, selected_features)
                     st.pyplot(fig)
-                    # Model equation
                     st.subheader("Model Equation")
                     
                     equation = f"{target_var} = "
@@ -252,7 +250,6 @@ def show(df):
                         equation += f"{sign} {abs(results['intercept']):.4f}"
                     
                     st.write(equation)
-                      # Model predictions section
                     st.subheader("Download Results")
                     
                     # Create predictions dataframe with proper index
@@ -274,7 +271,7 @@ def show(df):
                         current_date = datetime.now().strftime("%Y%m%d")
                         filename = f"{safe_target_name}_predictions_{current_date}.csv"
                         
-                        # Show the download button - made more prominent
+                        # Show the download button
                         st.download_button(
                             label="📥 Download CSV to Computer",
                             data=csv_data,

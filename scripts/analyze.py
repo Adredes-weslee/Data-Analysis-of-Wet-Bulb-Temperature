@@ -71,7 +71,7 @@ def main():
         If data loading or preparation fails
     """
     print("Starting wet bulb temperature analysis...")
-      # Define data folder path - considering script is in scripts/ directory
+    # Define data folder path - considering script is in scripts/ directory
     data_folder = Path(__file__).parent.parent / "data"
     
     # Set plot style

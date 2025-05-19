@@ -128,7 +128,9 @@ def plot_correlation_matrix(df, title='Correlation Matrix'):
     ------
     ValueError
         If the DataFrame has no numeric columns for correlation calculation
-    """    # Select only numeric columns for correlation
+    """    
+    
+    # Select only numeric columns for correlation
     numeric_df = df.select_dtypes(include=['number'])
     
     # Calculate the correlation matrix on numeric columns only

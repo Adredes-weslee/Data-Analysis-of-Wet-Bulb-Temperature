@@ -134,7 +134,7 @@ def main():
     
     # Data path
     data_path = os.path.join(str(Path(__file__).parent.parent), 'data')
-      # Load data
+    # Load data
     st.sidebar.text("Loading data...")
     df = load_processed_data(data_path)
     

@@ -46,7 +46,8 @@ def preprocess_for_regression(df, target_col, feature_cols, test_size=0.2, rando
             Testing target values
         scaler : sklearn.preprocessing.StandardScaler
             Fitted scaler object for future transformations
-    """    # Extract features and target, ensuring we only use numeric data
+    """    
+    # Extract features and target, ensuring we only use numeric data
     try:
         # Create a working copy of the dataframe to avoid modifying the original
         working_df = df.copy()

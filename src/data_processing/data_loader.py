@@ -72,7 +72,8 @@ def load_data(data_folder):
         data['climate_vars'] = pd.read_csv(climate_vars_path)
         logger.info(f"Loaded climate variables data: {data['climate_vars'].shape[0]} records")
     except FileNotFoundError:
-        logger.error(f"Climate variables data file not found at {climate_vars_path}")    # Carbon dioxide data
+        logger.error(f"Climate variables data file not found at {climate_vars_path}")    
+    # Carbon dioxide data
     try:
         co2_path = os.path.join(raw_data_path, 'co2_mm_mlo.csv')
         # Using comment='#' to skip header comments
@@ -81,7 +82,8 @@ def load_data(data_folder):
     except FileNotFoundError:
         logger.error(f"CO2 data file not found at {co2_path}")
     except Exception as e:
-        logger.error(f"Error loading CO2 data: {e}")    # Methane data
+        logger.error(f"Error loading CO2 data: {e}")    
+    # Methane data
     try:
         ch4_path = os.path.join(raw_data_path, 'ch4_mm_gl.csv')
         data['ch4'] = pd.read_csv(ch4_path, comment='#')
@@ -90,7 +92,7 @@ def load_data(data_folder):
         logger.error(f"CH4 data file not found at {ch4_path}")
     except Exception as e:
         logger.error(f"Error loading CH4 data: {e}")
-          # Nitrous oxide data
+    # Nitrous oxide data
     try:
         n2o_path = os.path.join(raw_data_path, 'n2o_mm_gl.csv')
         data['n2o'] = pd.read_csv(n2o_path, comment='#')
@@ -99,7 +101,7 @@ def load_data(data_folder):
         logger.error(f"N2O data file not found at {n2o_path}")
     except Exception as e:
         logger.error(f"Error loading N2O data: {e}")
-          # Sulfur hexafluoride data
+    # Sulfur hexafluoride data
     try:
         sf6_path = os.path.join(raw_data_path, 'sf6_mm_gl.csv')
         data['sf6'] = pd.read_csv(sf6_path, comment='#')
@@ -168,7 +170,7 @@ def clean_wet_bulb_data(df):
         min_wet_bulb=(temp_col, 'min'),
         std_wet_bulb=(temp_col, 'std')
     ).reset_index()
-      # Convert period to datetime for merging
+    # Convert period to datetime for merging
     monthly_stats['month'] = monthly_stats['year_month'].dt.to_timestamp()
     
     # Return the dataframe without the year_month column to avoid Period datatype issues
@@ -304,11 +306,11 @@ def clean_climate_vars_data(df):
     
     # If not found, use positions
     if rainfall_col is None and len(df_cleaned.columns) > 1:
-        rainfall_col = df_cleaned.columns[1]  # Second column is usually rainfall
+        rainfall_col = df_cleaned.columns[1]  
     if sunshine_col is None and len(df_cleaned.columns) > 2:
-        sunshine_col = df_cleaned.columns[2]  # Third column is usually sunshine
+        sunshine_col = df_cleaned.columns[2]  
     if humidity_col is None and len(df_cleaned.columns) > 3:
-        humidity_col = df_cleaned.columns[3]  # Fourth column is usually humidity
+        humidity_col = df_cleaned.columns[3]  
     
     # Create a new dataframe with standardized columns
     result = pd.DataFrame()
@@ -360,7 +362,7 @@ def clean_air_temp_data(df):
       # Rename columns for clarity
     df_cleaned = df_cleaned.rename(columns={
         'surface_air_temperature': 'mean_air_temp',
-        'mean_temp': 'mean_air_temp'  # Add this for the actual column name in the data
+        'mean_temp': 'mean_air_temp'  
     })
     
     return df_cleaned[['month', 'mean_air_temp']]
