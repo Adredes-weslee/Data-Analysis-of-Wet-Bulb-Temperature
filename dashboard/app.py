@@ -60,6 +60,18 @@ def load_processed_data(data_path):
     ------
     Exception
         If data loading fails, the exception is logged and propagated
+        
+    Side Effects
+    -----------
+    If processed data doesn't exist at data_path/processed/final_dataset.csv, 
+    this function will generate it using the raw data and the data preparation pipeline.
+    The processed data is not explicitly saved to disk here but is cached in memory
+    by Streamlit.
+    
+    Notes
+    -----
+    This function will first look for a processed dataset at data_path/processed/final_dataset.csv
+    If not found, it will fall back to processing raw data in data_path/raw/
     """
     try:
         # Check for processed data first
@@ -103,6 +115,18 @@ def main():
     -------
     None
         This function directly renders the Streamlit interface
+        
+    Side Effects
+    -----------
+    - Loads data using the cached load_processed_data function
+    - Renders a sidebar with navigation options
+    - Renders the selected page content in the main area
+    - May display error messages if data loading fails
+    
+    Raises
+    ------
+    Exception
+        Handled internally - displays error message to user if data loading fails
     """
     # Sidebar header
     st.sidebar.title("Wet Bulb Temperature Analysis")
@@ -110,10 +134,9 @@ def main():
     
     # Data path
     data_path = os.path.join(str(Path(__file__).parent.parent), 'data')
-    
-    # Load data
-    with st.sidebar.spinner("Loading data..."):
-        df = load_processed_data(data_path)
+      # Load data
+    st.sidebar.text("Loading data...")
+    df = load_processed_data(data_path)
     
     if df is None:
         st.error("Failed to load data. Please check the data directory and logs.")

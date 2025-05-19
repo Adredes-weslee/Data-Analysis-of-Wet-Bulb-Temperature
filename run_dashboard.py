@@ -10,6 +10,16 @@ Usage:
 
 The dashboard will be accessible through a web browser, typically at
 http://localhost:8501 unless another port is specified.
+
+Side Effects:
+    - Launches a Streamlit server process
+    - Opens a web browser window (behavior depends on Streamlit configuration)
+    - Creates a .streamlit directory for caching if it doesn't exist
+
+Notes:
+    This script is a convenience wrapper around the 'streamlit run' command.
+    It ensures that the Python path is set up correctly so that the dashboard
+    application can find all required modules.
 """
 import os
 import sys
