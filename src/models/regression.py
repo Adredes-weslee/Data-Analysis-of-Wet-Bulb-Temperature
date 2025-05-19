@@ -46,10 +46,31 @@ def preprocess_for_regression(df, target_col, feature_cols, test_size=0.2, rando
             Testing target values
         scaler : sklearn.preprocessing.StandardScaler
             Fitted scaler object for future transformations
-    """
-    # Extract features and target
-    X = df[feature_cols]
-    y = df[target_col]
+    """    # Extract features and target, ensuring we only use numeric data
+    try:
+        # Create a working copy of the dataframe to avoid modifying the original
+        working_df = df.copy()
+        
+        # Convert selected columns to numeric, errors='coerce' will set non-numeric values to NaN
+        for col in feature_cols + [target_col]:
+            if col in working_df.columns and working_df[col].dtype == 'object':
+                working_df[col] = pd.to_numeric(working_df[col], errors='coerce')
+        
+        # Create a combined dataframe with both features and target for easier NaN handling
+        model_data = working_df[feature_cols + [target_col]]
+        
+        # Drop any rows with NaN values in either features or target
+        model_data = model_data.dropna()
+        
+        if len(model_data) == 0:
+            raise ValueError("No valid data rows left after removing NaN values")
+            
+        # Extract features and target from the cleaned dataframe
+        X = model_data[feature_cols]
+        y = model_data[target_col]
+        
+    except Exception as e:
+        raise ValueError(f"Error preparing data for regression: {e}")
     
     # Split data into training and testing sets
     X_train, X_test, y_train, y_test = train_test_split(
@@ -111,7 +132,8 @@ def evaluate_regression_model(model, X_train, X_test, y_train, y_test, feature_n
     y_test : array-like
         Testing target
     feature_names : list, optional
-        List of feature names for coefficient mapping
+        List of feature names for coefficient mapping. If None, coefficients
+        will not be included in the results dictionary even if the model has them.
         
     Returns
     -------
@@ -123,8 +145,17 @@ def evaluate_regression_model(model, X_train, X_test, y_train, y_test, feature_n
         - test_r2: R-squared on test data
         - train_mae: Mean Absolute Error on training data
         - test_mae: Mean Absolute Error on test data
-        - coefficients: Dictionary mapping feature names to coefficients (if available)
-        - intercept: Model intercept (if available)
+        - coefficients: Dictionary mapping feature names to coefficients (only if 
+          feature_names is provided and model has coef_ attribute)
+        - intercept: Model intercept (only if model has intercept_ attribute)
+        
+    Notes
+    -----
+    The coefficients will only be included in the results if:
+    1. The feature_names parameter is provided (not None)
+    2. The model has a coef_ attribute (typically linear models)
+    
+    Similarly, the intercept will only be included if the model has an intercept_ attribute.
     """
     # Make predictions
     y_train_pred = model.predict(X_train)
@@ -182,6 +213,21 @@ def plot_actual_vs_predicted(y_actual, y_predicted, title='Actual vs Predicted')
     -------
     matplotlib.figure.Figure
         The Figure object containing the plot
+        
+    Notes
+    -----
+    Points above the diagonal line represent underestimation (predicted less than actual),
+    while points below represent overestimation (predicted more than actual).
+    
+    The function automatically scales the diagonal line to cover the complete range
+    of both actual and predicted values.
+    
+    Raises
+    ------
+    TypeError
+        If y_actual or y_predicted doesn't support min/max operations
+    ValueError
+        If y_actual and y_predicted have different lengths
     """
     fig, ax = plt.subplots(figsize=(8, 8))
     
@@ -226,6 +272,20 @@ def plot_residuals(y_actual, y_predicted, title='Residual Plot'):
     -------
     matplotlib.figure.Figure
         The Figure object containing the plot
+        
+    Notes
+    -----
+    Residuals are calculated as (actual - predicted). Points above the horizontal line
+    at y=0 represent underestimation, while points below represent overestimation.
+    
+    The function expects that y_actual and y_predicted have the same shape and order.
+    
+    Raises
+    ------
+    ValueError
+        If y_actual and y_predicted have different lengths
+    TypeError
+        If y_actual or y_predicted cannot be subtracted from each other
     """
     # Calculate residuals
     residuals = y_actual - y_predicted
