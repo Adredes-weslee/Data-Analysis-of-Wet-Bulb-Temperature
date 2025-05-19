@@ -176,7 +176,7 @@ wet-bulb-temperature-analysis/
 ├── INSTRUCTIONS.md      # This file
 ├── README.md            # Project overview and documentation
 ├── requirements.txt     # Python dependencies (pip)
-├── environment.yml      # Python dependencies (conda)
+├── environment.yaml      # Python dependencies (conda)
 └── run_dashboard.py     # Convenience script to start the dashboard
 ```
 
