@@ -130,7 +130,6 @@ def main():
     """
     # Sidebar header
     st.sidebar.title("Wet Bulb Temperature Analysis")
-    st.sidebar.image("https://i.imgur.com/1ZcRyrc.png", width=100)
     
     # Data path
     data_path = os.path.join(str(Path(__file__).parent.parent), 'data')
