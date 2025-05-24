@@ -150,34 +150,71 @@ If you want to use the Python modules directly in your own scripts or notebooks,
 The project is organized into the following key components:
 
 ```
-wet-bulb-temperature-analysis/
-├── dashboard/           # Streamlit interactive dashboard
-│   └── app.py           # Main dashboard application
-├── data/                # Data files
-│   ├── raw/             # Raw data files
-│   ├── processed/       # Cleaned and processed data
-│   └── output/          # Analysis outputs and visualizations
-├── notebooks/           # Jupyter notebooks for analysis
-│   ├── data_analysis_of_wet_bulb_temperature.ipynb  # Original analysis
-│   ├── sample_analysis.ipynb                        # Generated sample notebook
-│   └── project_evolution.ipynb                      # Project structure explanation
-├── scripts/             # Utility and analysis scripts
-│   ├── analyze.py                  # Sample analysis script
-│   ├── preprocess_data.py          # Data preprocessing script
-│   ├── create_sample_notebook.py   # Generate sample notebook
-│   └── verify_environment.py       # Verify environment setup
-├── src/                 # Source code modules
-│   ├── app_pages/       # Modular dashboard pages
-│   ├── data_processing/ # Data loading and preprocessing
-│   ├── features/        # Feature engineering
-│   ├── models/          # Regression models
-│   ├── utils/           # Statistical utilities
-│   └── visualization/   # Plotting functions
-├── INSTRUCTIONS.md      # This file
-├── README.md            # Project overview and documentation
-├── requirements.txt     # Python dependencies (pip)
-├── environment.yaml      # Python dependencies (conda)
-└── run_dashboard.py     # Convenience script to start the dashboard
+Data-Analysis-of-Wet-Bulb-Temperature/
+├── 🎛️ dashboard/           # Streamlit interactive dashboard
+│   ├── app.py              # Main dashboard application (189 lines)
+│   └── __init__.py         # Package initialization
+├── 📊 data/                # Data storage and outputs
+│   ├── raw/                # Original datasets (11 files)
+│   │   ├── wet-bulb-temperature-hourly.csv      # 365K+ hourly records
+│   │   ├── surface-air-temperature-monthly-mean.csv
+│   │   ├── M890081.csv     # Singapore climate variables
+│   │   ├── co2_mm_mlo.csv  # Global CO₂ concentrations
+│   │   ├── ch4_mm_gl.csv   # Global CH₄ concentrations
+│   │   ├── n2o_mm_gl.csv   # Global N₂O concentrations
+│   │   ├── sf6_mm_gl.csv   # Global SF₆ concentrations
+│   │   └── ...             # Additional datasets
+│   ├── processed/          # Clean, analysis-ready data
+│   │   ├── final_dataset.csv       # Merged analysis dataset (497 records)
+│   │   └── dataset_description.md  # Data documentation
+│   └── output/             # Generated visualizations
+│       ├── correlation_matrix.png
+│       ├── feature_importance.png
+│       ├── temp_scatter.png
+│       └── wet_bulb_time_series.png
+├── 📓 notebooks/           # Jupyter analysis notebooks
+│   ├── data_analysis_of_wet_bulb_temperature.ipynb  # Original research (1,502 lines)
+│   ├── sample_analysis.ipynb                        # Usage demonstration
+│   └── project_evolution.ipynb                      # Evolution analysis
+├── 🛠️ scripts/            # Automation and utility scripts
+│   ├── analyze.py          # Complete analysis pipeline
+│   ├── preprocess_data.py  # Data cleaning and merging
+│   ├── create_sample_notebook.py   # Generate example notebooks
+│   └── verify_environment.py       # Environment validation
+├── 🧩 src/                # Core Python modules (25+ files)
+│   ├── app_pages/          # Modular dashboard pages (6 components)
+│   │   ├── home.py         # Landing page with overview
+│   │   ├── data_explorer.py        # Interactive data examination
+│   │   ├── time_series.py  # Temporal analysis tools
+│   │   ├── correlation.py  # Statistical relationships
+│   │   ├── regression.py   # ML modeling interface
+│   │   └── about.py        # Project information
+│   ├── data_processing/    # Data loading and preprocessing
+│   │   └── data_loader.py  # Multi-source data integration (511 lines)
+│   ├── features/           # Feature engineering
+│   │   └── feature_engineering.py  # Temporal and derived features
+│   ├── models/             # Machine learning models
+│   │   └── regression.py   # Linear regression implementation
+│   ├── utils/              # Custom statistical functions
+│   │   └── statistics.py   # Manual statistical calculations
+│   └── visualization/      # Plotting and visualization
+│       └── exploratory.py  # Standardized visualizations (310 lines)
+├── 📋 logs/                # Application logs
+│   └── preprocessing.log   # Data processing logs
+├── 📄 Configuration Files
+│   ├── INSTRUCTIONS.md     # This usage guide
+│   ├── README.md           # Comprehensive project documentation (627 lines)
+│   ├── requirements.txt    # Python dependencies (pip)
+│   ├── environment.yaml    # Conda environment specification
+│   ├── run_dashboard.py    # One-command launcher
+│   ├── audit_report.md     # Code quality assessment
+│   └── documentation_improvements.md  # Enhancement tracking
 ```
+
+**Total Statistics:**
+- **Python Files**: 25+ modules across 6 subsystems
+- **Lines of Code**: 4,000+ lines (fully documented)
+- **Data Coverage**: 1982-2023 (40+ years of climate data)
+- **Records**: 497 monthly observations from 7 data sources
 
 For a more detailed overview of the project structure and implementation details, please refer to the README.md file.
