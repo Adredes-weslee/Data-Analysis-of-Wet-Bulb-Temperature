@@ -13,6 +13,11 @@
 
 This comprehensive climate analysis platform transforms raw meteorological data into actionable insights about heat stress patterns in tropical environments. Originally developed as academic research, it has evolved into a production-ready web application serving climate scientists, policy makers, and researchers.
 
+### 🚀 Live Demo
+Experience the application: [Wet Bulb Temperature Analysis Dashboard](https://adredes-weslee-data-analysis-of-wet-bulb-te-dashboardapp-mwqkey.streamlit.app/)
+
+---
+
 ### 🌡️ **Core Scientific Question**
 *How do commonly measured weather variables (sunshine, rainfall, relative humidity, air temperature) and the four main greenhouse gases (CO₂, CH₄, N₂O, SF₆) affect Singapore's wet-bulb temperature?*
 
