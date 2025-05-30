@@ -1,5 +1,20 @@
 """
-Time series analysis page for the Streamlit dashboard
+Time Series Analysis Page for Streamlit Dashboard
+
+This module provides an interactive time series analysis interface for the wet bulb
+temperature analysis dashboard. It allows users to explore temporal trends, seasonal
+patterns, and statistical decomposition of climate variables.
+
+Features include:
+- Variable selection and time range filtering
+- Rolling averages and trend analysis
+- Monthly pattern visualization
+- Year-over-year comparisons
+- Statistical time series decomposition
+- Interactive controls for customizing visualizations
+
+The page integrates with the visualization and statistical modules to provide
+comprehensive time series analysis capabilities.
 """
 import streamlit as st
 import pandas as pd

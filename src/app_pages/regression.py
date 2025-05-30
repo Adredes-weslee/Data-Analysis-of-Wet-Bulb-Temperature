@@ -1,6 +1,26 @@
 """
-Regression modeling page for the Streamlit dashboard
+Regression Modeling Page for Streamlit Dashboard
+
+This module provides an interactive regression modeling interface for the wet bulb
+temperature analysis dashboard. It allows users to build, train, and evaluate
+regression models with comprehensive feature engineering options.
+
+Features include:
+- Target variable and feature selection
+- Advanced feature engineering (temporal, interaction, lag, rolling features)
+- Model configuration and hyperparameter tuning
+- Cross-validation and performance evaluation
+- Interactive model diagnostics and visualization
+- Feature importance analysis
+- Residual analysis and model validation
+
+The page integrates with the models, features, and visualization modules to provide
+a complete machine learning workflow for wet bulb temperature prediction.
 """
+import streamlit as st
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
 import streamlit as st
 import pandas as pd
 import numpy as np

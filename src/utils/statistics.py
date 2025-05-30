@@ -1,7 +1,44 @@
 """
-Custom Statistical Functions Module
-==================================
-This module provides custom statistical functions for data analysis.
+Custom Statistical Functions Module for Wet-Bulb Temperature Analysis
+====================================================================
+
+This module provides custom implementations of fundamental statistical functions
+for analyzing meteorological and atmospheric data. It includes custom functions
+for calculating descriptive statistics that handle NaN values appropriately,
+which is crucial for climate data analysis where missing values are common.
+
+Features
+--------
+- Custom mean calculations with and without NaN handling
+- Standard deviation computations for complete and incomplete datasets
+- Pearson correlation coefficient calculation for bivariate analysis
+- Robust statistical measures designed for meteorological data patterns
+
+Technical Details
+----------------
+All functions in this module use pure Python implementations without
+dependencies on NumPy's statistical functions, providing transparency
+in calculations and educational value for understanding statistical
+computations from first principles.
+
+The module is specifically designed to handle the challenges of climate
+data analysis, including:
+- Missing or invalid sensor readings (NaN values)
+- Large datasets with varying completeness
+- Precise correlation analysis between atmospheric variables
+
+Usage Example
+------------
+>>> from src.utils.statistics import custom_mean_nan, custom_correlation
+>>> data = [23.5, 24.1, float('nan'), 25.2, 24.8]
+>>> mean_temp = custom_mean_nan(data)
+>>> correlation = custom_correlation([1, 2, 3], [2, 4, 6])
+
+Notes
+-----
+This module complements the main data analysis pipeline by providing
+fundamental statistical building blocks that can be used across different
+modules for consistent statistical computations.
 """
 import numpy as np
 import math

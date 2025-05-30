@@ -1,7 +1,55 @@
 """
-Feature Engineering Module
-=========================
-This module provides functions for feature engineering and transformation.
+Feature Engineering Module for Wet-Bulb Temperature Analysis
+===========================================================
+
+This module provides comprehensive feature engineering functions specifically
+designed for meteorological and atmospheric data analysis. It includes methods
+for creating temporal features, interaction variables, lag features, rolling
+statistics, and specialized wet-bulb temperature calculations.
+
+Features
+--------
+- Wet-bulb temperature calculation from air temperature and humidity
+- Temporal feature extraction (year, month, quarter, season)
+- Interaction features between related atmospheric variables  
+- Lag features for capturing temporal dependencies
+- Rolling window statistics for trend analysis
+- Data preparation utilities for machine learning models
+
+Technical Details
+----------------
+The module leverages pandas and NumPy for efficient computation and scikit-learn
+for data preprocessing. All functions return new DataFrames rather than modifying
+input data in-place, ensuring data integrity throughout the feature engineering
+pipeline.
+
+Key capabilities include:
+- Wet-bulb temperature approximation using psychrometric principles
+- Seasonal pattern encoding for climate modeling
+- Greenhouse gas composite indices for environmental analysis
+- Multi-lag feature generation for time series forecasting
+- Rolling statistics with configurable window sizes
+- Robust missing value handling and data preparation
+
+Usage Example
+------------
+>>> from src.features.feature_engineering import create_temporal_features, calculate_wet_bulb_temperature
+>>> df_with_temporal = create_temporal_features(climate_data)
+>>> wet_bulb = calculate_wet_bulb_temperature(temperature=25.0, relative_humidity=80.0)
+
+Integration
+----------
+This module integrates seamlessly with the broader analysis pipeline,
+providing features for:
+- Streamlit dashboard visualizations
+- Regression modeling and machine learning
+- Statistical analysis and correlation studies
+- Time series forecasting applications
+
+Notes
+-----
+All feature engineering functions preserve the original DataFrame structure
+and handle missing values appropriately for climate data analysis workflows.
 """
 import pandas as pd
 import numpy as np

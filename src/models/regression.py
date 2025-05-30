@@ -1,7 +1,61 @@
 """
-Regression Models Module
-=======================
-This module provides functions for building and evaluating regression models.
+Regression Models Module for Wet-Bulb Temperature Analysis
+=========================================================
+
+This module provides comprehensive regression modeling capabilities for analyzing
+relationships between atmospheric variables and wet-bulb temperature. It includes
+functions for data preprocessing, model building, evaluation, and visualization
+of regression results.
+
+Features
+--------
+- Automated data preprocessing and feature scaling for regression
+- Linear regression model building and training
+- Comprehensive model evaluation with multiple metrics
+- Visualization utilities for model diagnostics and interpretation
+- Feature importance analysis for understanding variable contributions
+
+Technical Details
+----------------
+The module leverages scikit-learn for machine learning functionality and 
+matplotlib for visualization. It provides robust data preprocessing that
+handles missing values, feature scaling, and proper train-test splitting
+for reliable model evaluation.
+
+Key capabilities include:
+- Data preprocessing with automatic handling of non-numeric values
+- StandardScaler integration for feature normalization
+- Multiple evaluation metrics: RMSE, R², MAE
+- Model diagnostic plots: actual vs predicted, residuals, feature importance
+- Coefficient analysis for linear model interpretation
+
+Evaluation Metrics
+-----------------
+- **RMSE (Root Mean Squared Error)**: Measures average prediction error magnitude
+- **R² (R-squared)**: Explains proportion of variance captured by the model
+- **MAE (Mean Absolute Error)**: Average absolute difference between actual and predicted
+
+Usage Example
+------------
+>>> from src.models.regression import preprocess_for_regression, build_linear_regression_model
+>>> X_train, X_test, y_train, y_test, scaler = preprocess_for_regression(data, 'wet_bulb_temp', features)
+>>> model = build_linear_regression_model(X_train, y_train)
+>>> results = evaluate_regression_model(model, X_train, X_test, y_train, y_test, features)
+
+Integration
+----------
+This module integrates with:
+- Feature engineering pipeline for model input preparation
+- Streamlit dashboard for interactive model building and evaluation
+- Visualization module for enhanced plotting capabilities
+- Statistical utilities for additional model validation
+
+Notes
+-----
+All functions are designed to handle real-world climate data challenges
+including missing values, mixed data types, and varying feature scales.
+The module emphasizes interpretability and diagnostic visualization for
+reliable model analysis.
 """
 import pandas as pd
 import numpy as np

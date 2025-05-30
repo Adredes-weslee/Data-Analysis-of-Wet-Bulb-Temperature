@@ -1,9 +1,85 @@
 """
-Data Loading and Preprocessing Module
-====================================
-This module provides functions to load and preprocess the data for analysis.
-It handles reading various climate and atmospheric gas datasets, preprocessing
-them into a consistent format, and merging them for analysis.
+Data Loading and Preprocessing Module for Wet-Bulb Temperature Analysis
+======================================================================
+
+This module provides comprehensive data loading and preprocessing capabilities
+for the wet-bulb temperature analysis project. It handles reading multiple
+climate and atmospheric datasets, cleaning and standardizing them, and merging
+them into a unified format suitable for analysis and modeling.
+
+Features
+--------
+- Multi-format data loading for diverse climate datasets
+- Robust data cleaning with error handling and logging
+- Temporal aggregation and standardization of time series data
+- Intelligent column detection and mapping across different data formats
+- Comprehensive data merging with proper datetime indexing
+- Automated preprocessing pipeline with configurable output saving
+
+Data Sources Supported
+---------------------
+- **Wet-bulb temperature**: Hourly measurements aggregated to monthly statistics
+- **Surface air temperature**: Monthly mean temperature data
+- **Climate variables**: Rainfall, sunshine hours, and relative humidity
+- **Greenhouse gases**: CO2, CH4, N2O, and SF6 concentration data
+- **Atmospheric data**: Various meteorological parameters
+
+Technical Details
+----------------
+The module uses pandas for data manipulation and includes robust error handling
+for missing files, malformed data, and inconsistent formats. It employs intelligent
+column detection to handle variations in data file structures and provides
+comprehensive logging for debugging and monitoring data processing operations.
+
+Key preprocessing steps include:
+- Datetime parsing and standardization across different formats
+- Monthly aggregation of high-frequency data (hourly to monthly)
+- Missing value detection and handling strategies
+- Column name standardization and mapping
+- Data type conversion and validation
+- Temporal alignment for multi-source data integration
+
+Data Pipeline Flow
+-----------------
+1. **Loading**: Raw data files are loaded with format-specific handling
+2. **Cleaning**: Individual datasets are cleaned and standardized
+3. **Temporal Processing**: Dates are parsed and aligned to monthly frequency
+4. **Aggregation**: High-frequency data is aggregated to monthly statistics
+5. **Merging**: All datasets are merged on the temporal dimension
+6. **Validation**: Final data quality checks and missing value handling
+7. **Output**: Processed data is optionally saved for downstream analysis
+
+Usage Example
+------------
+>>> from src.data_processing.data_loader import prepare_data_for_analysis
+>>> data = prepare_data_for_analysis('data/', save_output=True)
+>>> print(f"Loaded data shape: {data.shape}")
+
+Integration
+----------
+This module serves as the foundation for the entire analysis pipeline,
+providing clean data to:
+- Streamlit dashboard for interactive exploration
+- Feature engineering for model input preparation
+- Statistical analysis and correlation studies
+- Visualization and exploratory data analysis
+- Regression modeling and forecasting
+
+Error Handling
+-------------
+The module includes comprehensive error handling for:
+- Missing or corrupted data files
+- Inconsistent date formats across datasets
+- Varying column names and structures
+- Network interruptions during data loading
+- File permission and access issues
+
+Notes
+-----
+All data processing functions preserve original data integrity by working
+with copies, and provide detailed logging for transparency and debugging.
+The module is designed to handle real-world data challenges commonly
+encountered in climate and atmospheric datasets.
 """
 import pandas as pd
 import numpy as np
