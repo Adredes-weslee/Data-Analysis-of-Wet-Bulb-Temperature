@@ -1,5 +1,20 @@
 """
-Home page for the Streamlit dashboard
+Home Page for Streamlit Dashboard
+
+This module provides the main landing page for the wet bulb temperature analysis
+dashboard. It displays key insights, summary visualizations, and overview statistics
+to give users a quick understanding of the dataset and main findings.
+
+Features include:
+- Project overview and introduction
+- Key statistics and metrics display
+- Summary time series visualizations
+- Monthly temperature patterns
+- Correlation analysis overview
+- Dataset summary and statistics
+
+The page serves as the entry point for the application and provides navigation
+context for users to explore more detailed analysis in other sections.
 """
 import streamlit as st
 import pandas as pd

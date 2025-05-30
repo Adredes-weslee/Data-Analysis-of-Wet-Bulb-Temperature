@@ -1,6 +1,26 @@
 """
-Correlation analysis page for the Streamlit dashboard
+Correlation Analysis Page for Streamlit Dashboard
+
+This module provides an interactive correlation analysis interface for the wet bulb
+temperature analysis dashboard. It allows users to explore relationships between
+variables using various correlation methods and visualizations.
+
+Features include:
+- Variable selection for correlation analysis
+- Interactive correlation matrix visualization
+- Scatter plots with regression lines
+- Partial correlation analysis
+- Multiple correlation methods (Pearson, Spearman, Kendall)
+- Statistical significance testing
+- Customizable correlation thresholds
+
+The page integrates with the visualization module to provide comprehensive
+correlation analysis capabilities for understanding variable relationships.
 """
+import streamlit as st
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
 import streamlit as st
 import pandas as pd
 import numpy as np

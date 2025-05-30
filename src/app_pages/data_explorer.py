@@ -1,5 +1,21 @@
 """
-Data explorer page for the Streamlit dashboard
+Data Explorer Page for Streamlit Dashboard
+
+This module provides an interactive data exploration interface for the wet bulb
+temperature analysis dashboard. It allows users to examine dataset properties,
+filter data, and perform basic exploratory analysis.
+
+Features include:
+- Dataset overview and statistics
+- Interactive column selection and filtering
+- Time range filtering capabilities
+- Missing values analysis
+- Data type inspection
+- Custom value range filtering
+- Data export functionality
+
+The page enables users to understand the dataset structure and quality before
+proceeding with more advanced analysis in other sections of the dashboard.
 """
 import streamlit as st
 import pandas as pd

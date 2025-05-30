@@ -1,5 +1,21 @@
 """
-About page for the Streamlit dashboard
+About Page for Streamlit Dashboard
+
+This module provides project information, methodology details, and data source
+documentation for the wet bulb temperature analysis dashboard. It serves as
+a comprehensive reference for users to understand the project context and
+scientific background.
+
+Features include:
+- Project overview and objectives
+- Methodology and analysis approach
+- Data sources and attribution
+- Technical implementation details
+- Contact information and references
+- Glossary of terms and concepts
+
+The page provides essential context for users to understand the scientific
+basis and technical implementation of the wet bulb temperature analysis.
 """
 import streamlit as st
 
