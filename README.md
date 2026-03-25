@@ -4,6 +4,24 @@ A monthly climate-analysis app for Singapore wet-bulb temperature that combines 
 
 It also supports repeatable analysis through a standalone script path and a notebook path.
 
+<!-- README_SURFACE_START -->
+![Python](https://img.shields.io/badge/Python-Analysis_Stack-3776AB?style=flat-square&logo=python&logoColor=white) ![Streamlit](https://img.shields.io/badge/Streamlit-Dashboard-FF4B4B?style=flat-square&logo=streamlit&logoColor=white) ![Time Series](https://img.shields.io/badge/Time_Series-Climate_Analytics-0F766E?style=flat-square)
+
+[![Portfolio Article](https://img.shields.io/badge/Portfolio%20Article-102A43?style=flat-square)](https://adredes-weslee.github.io/data-science/climate/public-health/2023/05/15/predicting-heat-stress-with-wet-bulb-temperature.html) [![Live Demo](https://img.shields.io/badge/Live%20Demo-FF8B2B?style=flat-square)](https://adredes-weslee-data-analysis-of-wet-bulb-te-dashboardapp-mwqkey.streamlit.app/)
+![Repository preview](data/output/wet_bulb_time_series.png)
+
+## Quickstart
+
+```bash
+pip install -r requirements.txt
+python scripts/preprocess_data.py
+streamlit run dashboard/app.py
+```
+
+See [Setup and Run](#setup-and-run) for the full environment and verification path.
+
+<!-- README_SURFACE_END -->
+
 ## Why This Repository Exists
 
 - The repo frames wet-bulb temperature as a heat-stress and habitability problem, with the About page explaining the 35C threshold and Singapore relevance.
