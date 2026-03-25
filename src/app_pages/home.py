@@ -22,6 +22,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 from src.visualization.exploratory import plot_time_series
 
+
+def pick_first_column(df, *candidates):
+    for candidate in candidates:
+        if candidate in df.columns:
+            return candidate
+    return None
+
+
 def show(df):
     """
     Display the home page with overview information
@@ -40,12 +48,41 @@ def show(df):
         This function directly renders content to the Streamlit app
     """
     st.title("Wet Bulb Temperature Analysis Dashboard")
-    
-    st.write("""
-    This dashboard allows you to explore the relationship between wet bulb temperature in Singapore
-    and various climate variables and greenhouse gases. Use the navigation menu on the left to
-    explore different aspects of the data.
-    """)
+
+    st.markdown(
+        """
+        Track how wet bulb temperature in Singapore moves with air temperature, humidity,
+        rainfall, and greenhouse-gas proxies. Start here for the main trend, then move into
+        **Correlation Analysis** or **Regression Modeling** when you want the stronger
+        analytical breakdown.
+        """
+    )
+
+    wet_bulb_col = pick_first_column(df, 'avg_wet_bulb', 'mean_wet_bulb_temperature')
+    air_temp_col = pick_first_column(df, 'mean_air_temp', 'mean_surface_airtemp')
+    humidity_col = pick_first_column(df, 'mean_relative_humidity', 'avg_relative_humidity')
+    co2_col = pick_first_column(df, 'average_co2', 'average_co2_ppm')
+
+    metric_col1, metric_col2, metric_col3, metric_col4 = st.columns(4)
+    with metric_col1:
+        st.metric("Records", f"{len(df):,}")
+    with metric_col2:
+        if hasattr(df.index, "min") and len(df.index) > 0:
+            st.metric("Date range", f"{df.index.min().year}-{df.index.max().year}")
+        else:
+            st.metric("Date range", "N/A")
+    with metric_col3:
+        if wet_bulb_col is not None:
+            st.metric("Mean wet bulb", f"{df[wet_bulb_col].mean():.2f} °C")
+        else:
+            st.metric("Mean wet bulb", "N/A")
+    with metric_col4:
+        if wet_bulb_col is not None and len(df.index) > 0:
+            monthly_avg = df.groupby(df.index.month)[wet_bulb_col].mean()
+            hottest_month = pd.to_datetime(monthly_avg.idxmax(), format='%m').strftime('%b')
+            st.metric("Warmest month", hottest_month)
+        else:
+            st.metric("Warmest month", "N/A")
     
     # Display key statistics and trends
     col1, col2 = st.columns(2)
@@ -61,9 +98,10 @@ def show(df):
             st.pyplot(fig)
     
     with col2:
-        if 'average_co2_ppm' in df.columns:
+        co2_col = pick_first_column(df, 'average_co2', 'average_co2_ppm')
+        if co2_col:
             st.subheader("CO2 Concentration")
-            fig = plot_time_series(df, 'average_co2_ppm', rolling_window=12)
+            fig = plot_time_series(df, co2_col, rolling_window=12)
             st.pyplot(fig)
     
     # Show summary statistics
@@ -72,12 +110,8 @@ def show(df):
     
     # Display additional insights
     st.subheader("Key Insights")
-    
-    # Check if the necessary columns exist before creating insights
-    wet_bulb_col = 'avg_wet_bulb' if 'avg_wet_bulb' in df.columns else 'mean_wet_bulb_temperature' if 'mean_wet_bulb_temperature' in df.columns else None
-    air_temp_col = 'mean_air_temp' if 'mean_air_temp' in df.columns else 'mean_surface_airtemp' if 'mean_surface_airtemp' in df.columns else None
-    
-    has_required_columns = wet_bulb_col is not None and air_temp_col is not None and 'mean_relative_humidity' in df.columns
+
+    has_required_columns = wet_bulb_col is not None and air_temp_col is not None and humidity_col is not None
     
     if has_required_columns:
         # Calculate average wet bulb temperature by month
@@ -96,9 +130,9 @@ def show(df):
         st.pyplot(fig)
         
         # Calculate correlation between key variables
-        corr_cols = [wet_bulb_col, air_temp_col, 'mean_relative_humidity']
-        if 'average_co2_ppm' in df.columns:
-            corr_cols.append('average_co2_ppm')
+        corr_cols = [wet_bulb_col, air_temp_col, humidity_col]
+        if co2_col is not None:
+            corr_cols.append(co2_col)
             
         corr_matrix = df[corr_cols].corr()
         

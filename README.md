@@ -10,6 +10,10 @@ It also supports repeatable analysis through a standalone script path and a note
 [![Portfolio Article](https://img.shields.io/badge/Portfolio%20Article-102A43?style=flat-square)](https://adredes-weslee.github.io/data-science/climate/public-health/2023/05/15/predicting-heat-stress-with-wet-bulb-temperature.html) [![Live Demo](https://img.shields.io/badge/Live%20Demo-FF8B2B?style=flat-square)](https://adredes-weslee-data-analysis-of-wet-bulb-te-dashboardapp-mwqkey.streamlit.app/)
 ![Repository preview](data/output/wet_bulb_time_series.png)
 
+## Interface Preview
+
+![Interface preview](docs/screenshots/app-overview.png)
+
 ## Quickstart
 
 ```bash
